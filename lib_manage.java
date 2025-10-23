@@ -1,0 +1,720 @@
+import javax.swing.*;
+import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+
+public class lib_manage extends JFrame {
+    private ArrayList<Book> books;
+    private ArrayList<IssuedBook> issuedBooks;
+    private JTable bookTable, issuedTable;
+    private DefaultTableModel bookTableModel, issuedTableModel;
+    
+    // Modern color scheme
+    private static final Color PRIMARY = new Color(99, 102, 241);
+    private static final Color PRIMARY_DARK = new Color(79, 70, 229);
+    private static final Color SECONDARY = new Color(236, 72, 153);
+    private static final Color BACKGROUND = new Color(15, 23, 42);
+    private static final Color CARD_BG = new Color(30, 41, 59);
+    private static final Color CARD_HOVER = new Color(51, 65, 85);
+    private static final Color TEXT_PRIMARY = new Color(248, 250, 252);
+    private static final Color TEXT_SECONDARY = new Color(148, 163, 184);
+    private static final Color SUCCESS = new Color(34, 197, 94);
+    private static final Color DANGER = new Color(239, 68, 68);
+    
+    class Book {
+        String id, title, author, category;
+        int quantity, available;
+        
+        Book(String id, String title, String author, String category, int quantity) {
+            this.id = id;
+            this.title = title;
+            this.author = author;
+            this.category = category;
+            this.quantity = quantity;
+            this.available = quantity;
+        }
+    }
+    
+    class IssuedBook {
+        String bookId, bookTitle, studentName, studentId, issueDate;
+        
+        IssuedBook(String bookId, String bookTitle, String studentName, String studentId, String issueDate) {
+            this.bookId = bookId;
+            this.bookTitle = bookTitle;
+            this.studentName = studentName;
+            this.studentId = studentId;
+            this.issueDate = issueDate;
+        }
+    }
+    
+    public lib_manage() {
+        books = new ArrayList<>();
+        issuedBooks = new ArrayList<>();
+        
+        books.add(new Book("B001", "Java Programming", "James Gosling", "Programming", 5));
+        books.add(new Book("B002", "Data Structures", "Robert Sedgewick", "Computer Science", 3));
+        books.add(new Book("B003", "Clean Code", "Robert Martin", "Software Engineering", 4));
+        books.add(new Book("B004", "Design Patterns", "Gang of Four", "Software Engineering", 6));
+        books.add(new Book("B005", "The Pragmatic Programmer", "Andy Hunt", "Programming", 4));
+        books.add(new Book("B006", "Introduction to Algorithms", "Thomas Cormen", "Computer Science", 7));
+        books.add(new Book("B007", "Artificial Intelligence", "Stuart Russell", "AI & ML", 5));
+        books.add(new Book("B008", "Database Systems", "Ramez Elmasri", "Databases", 6));
+        books.add(new Book("B009", "Computer Networks", "Andrew Tanenbaum", "Networking", 4));
+        books.add(new Book("B010", "Operating Systems", "Abraham Silberschatz", "Systems", 5));
+        books.add(new Book("B011", "Python Crash Course", "Eric Matthes", "Programming", 8));
+        books.add(new Book("B012", "Head First Design Patterns", "Eric Freeman", "Software Engineering", 5));
+        books.add(new Book("B013", "The Art of Computer Programming", "Donald Knuth", "Computer Science", 3));
+        books.add(new Book("B014", "Deep Learning", "Ian Goodfellow", "AI & ML", 4));
+        books.add(new Book("B015", "Cracking the Coding Interview", "Gayle McDowell", "Interview Prep", 10));
+        books.add(new Book("B016", "Effective Java", "Joshua Bloch", "Programming", 6));
+        books.add(new Book("B017", "Code Complete", "Steve McConnell", "Software Engineering", 5));
+        books.add(new Book("B018", "Refactoring", "Martin Fowler", "Software Engineering", 4));
+        books.add(new Book("B019", "Web Development with Node", "David Herron", "Web Development", 7));
+        books.add(new Book("B020", "React in Action", "Mark Thomas", "Web Development", 6));
+        books.add(new Book("B021", "Cloud Computing", "Thomas Erl", "Cloud & DevOps", 5));
+        books.add(new Book("B022", "Docker Deep Dive", "Nigel Poulton", "Cloud & DevOps", 4));
+        books.add(new Book("B023", "Kubernetes in Action", "Marko Luksa", "Cloud & DevOps", 5));
+        books.add(new Book("B024", "Machine Learning Yearning", "Andrew Ng", "AI & ML", 8));
+        books.add(new Book("B025", "Natural Language Processing", "Dan Jurafsky", "AI & ML", 4));
+        books.add(new Book("B026", "Computer Vision", "Richard Szeliski", "AI & ML", 3));
+        books.add(new Book("B027", "Cybersecurity Essentials", "Charles Brooks", "Security", 6));
+        books.add(new Book("B028", "Ethical Hacking", "Michael Gregg", "Security", 5));
+        books.add(new Book("B029", "Blockchain Basics", "Daniel Drescher", "Emerging Tech", 4));
+        books.add(new Book("B030", "Internet of Things", "Samuel Greengard", "Emerging Tech", 5));
+        books.add(new Book("B031", "Quantum Computing", "Chris Bernhardt", "Emerging Tech", 3));
+        books.add(new Book("B032", "Game Development Patterns", "Robert Nystrom", "Game Development", 6));
+        books.add(new Book("B033", "Unity in Action", "Joe Hocking", "Game Development", 7));
+        books.add(new Book("B034", "Mobile App Development", "Neil Smyth", "Mobile", 8));
+        books.add(new Book("B035", "iOS Programming", "Christian Keur", "Mobile", 5));
+        books.add(new Book("B036", "Android Development", "Bill Phillips", "Mobile", 6));
+        books.add(new Book("B037", "System Design Interview", "Alex Xu", "Interview Prep", 9));
+        books.add(new Book("B038", "Programming Pearls", "Jon Bentley", "Programming", 4));
+        books.add(new Book("B039", "Compilers Principles", "Alfred Aho", "Computer Science", 3));
+        books.add(new Book("B040", "Distributed Systems", "Maarten van Steen", "Systems", 5));
+        books.add(new Book("B041", "Software Architecture", "Mark Richards", "Architecture", 6));
+        books.add(new Book("B042", "Microservices Patterns", "Chris Richardson", "Architecture", 5));
+        books.add(new Book("B043", "Domain-Driven Design", "Eric Evans", "Architecture", 4));
+        books.add(new Book("B044", "JavaScript: The Good Parts", "Douglas Crockford", "Web Development", 7));
+        books.add(new Book("B045", "You Don't Know JS", "Kyle Simpson", "Web Development", 8));
+        books.add(new Book("B046", "Eloquent JavaScript", "Marijn Haverbeke", "Web Development", 6));
+        books.add(new Book("B047", "CSS Secrets", "Lea Verou", "Web Development", 5));
+        books.add(new Book("B048", "HTML5 and CSS3", "Brian Hogan", "Web Development", 6));
+        books.add(new Book("B049", "Vue.js in Action", "Erik Hanchett", "Web Development", 5));
+        books.add(new Book("B050", "Angular Development", "Nathan Murray", "Web Development", 4));
+        books.add(new Book("B051", "TypeScript Quickly", "Yakov Fain", "Programming", 5));
+        books.add(new Book("B052", "Go Programming", "Alan Donovan", "Programming", 6));
+        books.add(new Book("B053", "Rust in Action", "Tim McNamara", "Programming", 4));
+        books.add(new Book("B054", "C++ Primer", "Stanley Lippman", "Programming", 7));
+        books.add(new Book("B055", "Python for Data Analysis", "Wes McKinney", "Data Science", 8));
+        books.add(new Book("B056", "R for Data Science", "Hadley Wickham", "Data Science", 6));
+        books.add(new Book("B057", "Statistics for Data Science", "James Bruce", "Data Science", 5));
+        books.add(new Book("B058", "Big Data Analytics", "Seema Acharya", "Data Science", 4));
+        books.add(new Book("B059", "Data Mining Techniques", "Jiawei Han", "Data Science", 5));
+        books.add(new Book("B060", "SQL Performance Explained", "Markus Winand", "Databases", 6));
+        books.add(new Book("B061", "MongoDB in Action", "Kyle Banker", "Databases", 5));
+        books.add(new Book("B062", "PostgreSQL Up and Running", "Regina Obe", "Databases", 4));
+        books.add(new Book("B063", "Redis in Action", "Josiah Carlson", "Databases", 5));
+        books.add(new Book("B064", "Cassandra: The Definitive Guide", "Jeff Carpenter", "Databases", 3));
+        books.add(new Book("B065", "Linux Command Line", "William Shotts", "Systems", 7));
+        books.add(new Book("B066", "Linux System Programming", "Robert Love", "Systems", 5));
+        books.add(new Book("B067", "Windows Internals", "Mark Russinovich", "Systems", 4));
+        books.add(new Book("B068", "Computer Organization", "David Patterson", "Computer Science", 6));
+        books.add(new Book("B069", "Digital Design", "Morris Mano", "Computer Science", 5));
+        books.add(new Book("B070", "Theory of Computation", "Michael Sipser", "Computer Science", 4));
+        books.add(new Book("B071", "Discrete Mathematics", "Kenneth Rosen", "Mathematics", 6));
+        books.add(new Book("B072", "Linear Algebra", "Gilbert Strang", "Mathematics", 5));
+        books.add(new Book("B073", "Calculus", "James Stewart", "Mathematics", 7));
+        books.add(new Book("B074", "Probability and Statistics", "Morris DeGroot", "Mathematics", 5));
+        books.add(new Book("B075", "Network Security", "William Stallings", "Security", 6));
+        books.add(new Book("B076", "Cryptography Engineering", "Niels Ferguson", "Security", 4));
+        books.add(new Book("B077", "Web Application Security", "Andrew Hoffman", "Security", 5));
+        books.add(new Book("B078", "Penetration Testing", "Georgia Weidman", "Security", 6));
+        books.add(new Book("B079", "Malware Analysis", "Michael Sikorski", "Security", 4));
+        books.add(new Book("B080", "AWS Certified Solutions", "Ben Piper", "Cloud & DevOps", 7));
+        books.add(new Book("B081", "Azure Administrator", "Michael Washam", "Cloud & DevOps", 5));
+        books.add(new Book("B082", "Google Cloud Platform", "Dan Sullivan", "Cloud & DevOps", 6));
+        books.add(new Book("B083", "Terraform Up and Running", "Yevgeniy Brikman", "Cloud & DevOps", 5));
+        books.add(new Book("B084", "Continuous Delivery", "Jez Humble", "Cloud & DevOps", 6));
+        books.add(new Book("B085", "Site Reliability Engineering", "Betsy Beyer", "Cloud & DevOps", 7));
+        books.add(new Book("B086", "Jenkins: The Definitive Guide", "John Smart", "Cloud & DevOps", 4));
+        books.add(new Book("B087", "Git Version Control", "Jon Loeliger", "Tools", 6));
+        books.add(new Book("B088", "Regular Expressions Cookbook", "Jan Goyvaerts", "Tools", 5));
+        books.add(new Book("B089", "Vim Text Editor", "Steve Oualline", "Tools", 4));
+        books.add(new Book("B090", "Test Driven Development", "Kent Beck", "Software Engineering", 5));
+        books.add(new Book("B091", "Agile Software Development", "Robert Martin", "Software Engineering", 6));
+        books.add(new Book("B092", "Scrum Mastery", "Geoff Watts", "Project Management", 5));
+        books.add(new Book("B093", "The Phoenix Project", "Gene Kim", "IT Management", 7));
+        books.add(new Book("B094", "The DevOps Handbook", "Gene Kim", "IT Management", 6));
+        books.add(new Book("B095", "Soft Skills", "John Sonmez", "Career", 8));
+        books.add(new Book("B096", "The Mythical Man-Month", "Frederick Brooks", "Software Engineering", 4));
+        books.add(new Book("B097", "Coders at Work", "Peter Seibel", "Career", 5));
+        books.add(new Book("B098", "Structure and Interpretation", "Harold Abelson", "Computer Science", 4));
+        books.add(new Book("B099", "Grokking Algorithms", "Aditya Bhargava", "Computer Science", 9));
+        books.add(new Book("B100", "The Self-Taught Programmer", "Cory Althoff", "Career", 7));
+        
+        setTitle("Library Management System");
+        setSize(1200, 800);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        getContentPane().setBackground(BACKGROUND);
+        
+        initComponents();
+        setVisible(true);
+    }
+    
+    private void initComponents() {
+        setLayout(new BorderLayout());
+        
+        // Header
+        JPanel header = createHeader();
+        add(header, BorderLayout.NORTH);
+        
+        // Main content with custom tabbed pane
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(BACKGROUND);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 30, 30));
+        
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setBackground(CARD_BG);
+        tabbedPane.setForeground(TEXT_PRIMARY);
+        tabbedPane.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        
+        // Style the tabbed pane
+        UIManager.put("TabbedPane.selected", CARD_BG);
+        UIManager.put("TabbedPane.background", BACKGROUND);
+        UIManager.put("TabbedPane.foreground", TEXT_PRIMARY);
+        UIManager.put("TabbedPane.contentAreaColor", BACKGROUND);
+        UIManager.put("TabbedPane.borderHightlightColor", PRIMARY);
+        UIManager.put("TabbedPane.darkShadow", BACKGROUND);
+        UIManager.put("TabbedPane.light", PRIMARY);
+        UIManager.put("TabbedPane.selectHighlight", PRIMARY);
+        
+        JPanel booksPanel = createBooksPanel();
+        JPanel issuePanel = createIssuePanel();
+        
+        tabbedPane.addTab("📚 Books Library", booksPanel);
+        tabbedPane.addTab("🔄 Issue & Return", issuePanel);
+        
+        mainPanel.add(tabbedPane);
+        add(mainPanel, BorderLayout.CENTER);
+    }
+    
+    private JPanel createHeader() {
+        JPanel header = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                GradientPaint gp = new GradientPaint(0, 0, PRIMARY, getWidth(), 0, SECONDARY);
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        header.setPreferredSize(new Dimension(0, 100));
+        header.setLayout(new BorderLayout());
+        
+        JLabel title = new JLabel("📖 Library Management System");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        title.setForeground(Color.WHITE);
+        title.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        header.add(title, BorderLayout.WEST);
+        
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 20));
+        statsPanel.setOpaque(false);
+        
+        JLabel totalBooks = new JLabel("Total Books: " + books.size());
+        totalBooks.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        totalBooks.setForeground(Color.WHITE);
+        
+        JLabel issuedCount = new JLabel("Issued: " + issuedBooks.size());
+        issuedCount.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        issuedCount.setForeground(Color.WHITE);
+        
+        statsPanel.add(totalBooks);
+        statsPanel.add(issuedCount);
+        header.add(statsPanel, BorderLayout.EAST);
+        
+        return header;
+    }
+    
+    private JPanel createBooksPanel() {
+        JPanel panel = new JPanel(new BorderLayout(15, 15));
+        panel.setBackground(BACKGROUND);
+        
+        String[] columns = {"ID", "Title", "Author", "Category", "Total", "Available"};
+        bookTableModel = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        bookTable = new JTable(bookTableModel);
+        styleTable(bookTable);
+        refreshBookTable();
+        
+        JScrollPane scrollPane = new JScrollPane(bookTable);
+        styleScrollPane(scrollPane);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        buttonPanel.setBackground(BACKGROUND);
+        
+        JButton addBtn = createStyledButton("➕ Add Book", PRIMARY);
+        JButton removeBtn = createStyledButton("🗑️ Remove Book", DANGER);
+        JButton refreshBtn = createStyledButton("🔄 Refresh", SUCCESS);
+        
+        addBtn.addActionListener(e -> addBookDialog());
+        removeBtn.addActionListener(e -> removeBook());
+        refreshBtn.addActionListener(e -> {
+            refreshBookTable();
+            refreshHeader();
+        });
+        
+        buttonPanel.add(addBtn);
+        buttonPanel.add(removeBtn);
+        buttonPanel.add(refreshBtn);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        return panel;
+    }
+    
+    private JPanel createIssuePanel() {
+        JPanel panel = new JPanel(new BorderLayout(15, 15));
+        panel.setBackground(BACKGROUND);
+        
+        // Issue form card
+        JPanel formCard = new JPanel();
+        formCard.setBackground(CARD_BG);
+        formCard.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(PRIMARY, 2),
+            BorderFactory.createEmptyBorder(25, 25, 25, 25)
+        ));
+        formCard.setLayout(new GridBagLayout());
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(8, 8, 8, 8);
+        
+        JLabel formTitle = new JLabel("Issue New Book");
+        formTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        formTitle.setForeground(PRIMARY);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        formCard.add(formTitle, gbc);
+        
+        gbc.gridwidth = 1;
+        gbc.gridy = 1;
+        
+        JTextField txtBookId = createStyledTextField();
+        JTextField txtStudentName = createStyledTextField();
+        JTextField txtStudentId = createStyledTextField();
+        
+        addFormField(formCard, gbc, "📖 Book ID:", txtBookId, 1);
+        addFormField(formCard, gbc, "👤 Student Name:", txtStudentName, 2);
+        addFormField(formCard, gbc, "🎓 Student ID:", txtStudentId, 3);
+        
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        JButton issueBtn = createStyledButton("✅ Issue Book", SUCCESS);
+        issueBtn.setPreferredSize(new Dimension(200, 45));
+        issueBtn.addActionListener(e -> {
+            issueBook(txtBookId.getText(), txtStudentName.getText(), txtStudentId.getText());
+            txtBookId.setText("");
+            txtStudentName.setText("");
+            txtStudentId.setText("");
+        });
+        formCard.add(issueBtn, gbc);
+        
+        panel.add(formCard, BorderLayout.NORTH);
+        
+        // Issued books table
+        String[] columns = {"Book ID", "Title", "Student", "Student ID", "Issue Date"};
+        issuedTableModel = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        issuedTable = new JTable(issuedTableModel);
+        styleTable(issuedTable);
+        
+        JScrollPane scrollPane = new JScrollPane(issuedTable);
+        styleScrollPane(scrollPane);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        JPanel returnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        returnPanel.setBackground(BACKGROUND);
+        JButton returnBtn = createStyledButton("↩️ Return Selected Book", SECONDARY);
+        returnBtn.addActionListener(e -> returnBook());
+        returnPanel.add(returnBtn);
+        panel.add(returnPanel, BorderLayout.SOUTH);
+        
+        return panel;
+    }
+    
+    private void addFormField(JPanel panel, GridBagConstraints gbc, String label, JTextField field, int row) {
+        gbc.gridy = row;
+        gbc.gridx = 0;
+        gbc.weightx = 0.3;
+        JLabel lbl = new JLabel(label);
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lbl.setForeground(TEXT_PRIMARY);
+        panel.add(lbl, gbc);
+        
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
+        panel.add(field, gbc);
+    }
+    
+    private JTextField createStyledTextField() {
+        JTextField field = new JTextField(20);
+        field.setBackground(BACKGROUND);
+        field.setForeground(TEXT_PRIMARY);
+        field.setCaretColor(TEXT_PRIMARY);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(PRIMARY, 1),
+            BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
+        return field;
+    }
+    
+    private JButton createStyledButton(String text, Color color) {
+        JButton btn = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                if (getModel().isPressed()) {
+                    g2d.setColor(color.darker());
+                } else if (getModel().isRollover()) {
+                    g2d.setColor(color.brighter());
+                } else {
+                    g2d.setColor(color);
+                }
+                
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                
+                g2d.setColor(Color.WHITE);
+                g2d.setFont(getFont());
+                FontMetrics fm = g2d.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                g2d.drawString(getText(), x, y);
+            }
+        };
+        
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setContentAreaFilled(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(180, 40));
+        
+        return btn;
+    }
+    
+    private void styleTable(JTable table) {
+        table.setBackground(CARD_BG);
+        table.setForeground(TEXT_PRIMARY);
+        table.setGridColor(BACKGROUND);
+        table.setSelectionBackground(PRIMARY);
+        table.setSelectionForeground(Color.WHITE);
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        table.setRowHeight(40);
+        table.setShowGrid(true);
+        table.setIntercellSpacing(new Dimension(1, 1));
+        
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(PRIMARY);
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setPreferredSize(new Dimension(0, 45));
+        
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+        headerRenderer.setBackground(PRIMARY);
+        headerRenderer.setForeground(Color.WHITE);
+        headerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        headerRenderer.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        
+        for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+        }
+        
+        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+        cellRenderer.setHorizontalAlignment(JLabel.CENTER);
+        cellRenderer.setBackground(CARD_BG);
+        cellRenderer.setForeground(TEXT_PRIMARY);
+        
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+        }
+    }
+    
+    private void styleScrollPane(JScrollPane scrollPane) {
+        scrollPane.setBorder(BorderFactory.createLineBorder(PRIMARY, 1));
+        scrollPane.getViewport().setBackground(CARD_BG);
+        
+        JScrollBar vertical = scrollPane.getVerticalScrollBar();
+        vertical.setUI(new ModernScrollBarUI());
+        vertical.setPreferredSize(new Dimension(12, 0));
+        
+        JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
+        horizontal.setUI(new ModernScrollBarUI());
+        horizontal.setPreferredSize(new Dimension(0, 12));
+    }
+    
+    class ModernScrollBarUI extends BasicScrollBarUI {
+        @Override
+        protected void configureScrollBarColors() {
+            this.thumbColor = PRIMARY;
+            this.trackColor = BACKGROUND;
+        }
+        
+        @Override
+        protected JButton createDecreaseButton(int orientation) {
+            return createZeroButton();
+        }
+        
+        @Override
+        protected JButton createIncreaseButton(int orientation) {
+            return createZeroButton();
+        }
+        
+        private JButton createZeroButton() {
+            JButton button = new JButton();
+            button.setPreferredSize(new Dimension(0, 0));
+            return button;
+        }
+        
+        @Override
+        protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(thumbColor);
+            g2.fillRoundRect(thumbBounds.x + 2, thumbBounds.y + 2,
+                thumbBounds.width - 4, thumbBounds.height - 4, 6, 6);
+        }
+    }
+    
+    private void refreshBookTable() {
+        bookTableModel.setRowCount(0);
+        for (Book book : books) {
+            bookTableModel.addRow(new Object[]{
+                book.id, book.title, book.author, book.category, book.quantity, book.available
+            });
+        }
+    }
+    
+    private void refreshHeader() {
+        getContentPane().removeAll();
+        initComponents();
+        revalidate();
+        repaint();
+    }
+    
+    private void addBookDialog() {
+        JDialog dialog = new JDialog(this, "Add New Book", true);
+        dialog.setSize(500, 450);
+        dialog.setLocationRelativeTo(this);
+        dialog.getContentPane().setBackground(BACKGROUND);
+        
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(CARD_BG);
+        mainPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(PRIMARY, 2),
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+        mainPanel.setLayout(new GridBagLayout());
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        
+        JLabel title = new JLabel("➕ Add New Book");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setForeground(PRIMARY);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        mainPanel.add(title, gbc);
+        
+        gbc.gridwidth = 1;
+        
+        JTextField txtId = createStyledTextField();
+        JTextField txtTitle = createStyledTextField();
+        JTextField txtAuthor = createStyledTextField();
+        JTextField txtCategory = createStyledTextField();
+        JTextField txtQuantity = createStyledTextField();
+        
+        addFormField(mainPanel, gbc, "📌 Book ID:", txtId, 1);
+        addFormField(mainPanel, gbc, "📖 Title:", txtTitle, 2);
+        addFormField(mainPanel, gbc, "✍️ Author:", txtAuthor, 3);
+        addFormField(mainPanel, gbc, "📂 Category:", txtCategory, 4);
+        addFormField(mainPanel, gbc, "🔢 Quantity:", txtQuantity, 5);
+        
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonPanel.setOpaque(false);
+        
+        JButton addBtn = createStyledButton("✅ Add", SUCCESS);
+        JButton cancelBtn = createStyledButton("❌ Cancel", DANGER);
+        
+        addBtn.addActionListener(e -> {
+            try {
+                String id = txtId.getText().trim();
+                String bookTitle = txtTitle.getText().trim();
+                String author = txtAuthor.getText().trim();
+                String category = txtCategory.getText().trim();
+                int quantity = Integer.parseInt(txtQuantity.getText().trim());
+                
+                if (id.isEmpty() || bookTitle.isEmpty() || author.isEmpty() || category.isEmpty()) {
+                    showStyledMessage(dialog, "⚠️ All fields are required!", DANGER);
+                    return;
+                }
+                
+                for (Book b : books) {
+                    if (b.id.equals(id)) {
+                        showStyledMessage(dialog, "⚠️ Book ID already exists!", DANGER);
+                        return;
+                    }
+                }
+                
+                books.add(new Book(id, bookTitle, author, category, quantity));
+                refreshBookTable();
+                refreshHeader();
+                showStyledMessage(dialog, "✅ Book added successfully!", SUCCESS);
+                dialog.dispose();
+            } catch (NumberFormatException ex) {
+                showStyledMessage(dialog, "⚠️ Invalid quantity!", DANGER);
+            }
+        });
+        
+        cancelBtn.addActionListener(e -> dialog.dispose());
+        
+        buttonPanel.add(addBtn);
+        buttonPanel.add(cancelBtn);
+        
+        gbc.gridy = 6;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        mainPanel.add(buttonPanel, gbc);
+        
+        dialog.add(mainPanel);
+        dialog.setVisible(true);
+    }
+    
+    private void showStyledMessage(Component parent, String message, Color color) {
+        JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
+        JDialog dialog = pane.createDialog(parent, "Notification");
+        dialog.getContentPane().setBackground(CARD_BG);
+        dialog.setVisible(true);
+    }
+    
+    private void removeBook() {
+        int row = bookTable.getSelectedRow();
+        if (row == -1) {
+            showStyledMessage(this, "⚠️ Please select a book to remove!", DANGER);
+            return;
+        }
+        
+        String bookId = (String) bookTableModel.getValueAt(row, 0);
+        
+        for (IssuedBook ib : issuedBooks) {
+            if (ib.bookId.equals(bookId)) {
+                showStyledMessage(this, "⚠️ Cannot remove! Book is currently issued.", DANGER);
+                return;
+            }
+        }
+        
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "Are you sure you want to remove this book?", 
+            "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            books.removeIf(b -> b.id.equals(bookId));
+            refreshBookTable();
+            refreshHeader();
+            showStyledMessage(this, "✅ Book removed successfully!", SUCCESS);
+        }
+    }
+    
+    private void issueBook(String bookId, String studentName, String studentId) {
+        if (bookId.isEmpty() || studentName.isEmpty() || studentId.isEmpty()) {
+            showStyledMessage(this, "⚠️ All fields are required!", DANGER);
+            return;
+        }
+        
+        Book book = null;
+        for (Book b : books) {
+            if (b.id.equals(bookId)) {
+                book = b;
+                break;
+            }
+        }
+        
+        if (book == null) {
+            showStyledMessage(this, "⚠️ Book not found!", DANGER);
+            return;
+        }
+        
+        if (book.available <= 0) {
+            showStyledMessage(this, "⚠️ Book not available!", DANGER);
+            return;
+        }
+        
+        book.available--;
+        String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        issuedBooks.add(new IssuedBook(bookId, book.title, studentName, studentId, date));
+        
+        refreshBookTable();
+        refreshIssuedTable();
+        refreshHeader();
+        showStyledMessage(this, "✅ Book issued successfully!", SUCCESS);
+    }
+    
+    private void returnBook() {
+        int row = issuedTable.getSelectedRow();
+        if (row == -1) {
+            showStyledMessage(this, "⚠️ Please select a book to return!", DANGER);
+            return;
+        }
+        
+        String bookId = (String) issuedTableModel.getValueAt(row, 0);
+        
+        for (Book b : books) {
+            if (b.id.equals(bookId)) {
+                b.available++;
+                break;
+            }
+        }
+        
+        issuedBooks.remove(row);
+        refreshBookTable();
+        refreshIssuedTable();
+        refreshHeader();
+        showStyledMessage(this, "✅ Book returned successfully!", SUCCESS);
+    }
+    
+    private void refreshIssuedTable() {
+        issuedTableModel.setRowCount(0);
+        for (IssuedBook ib : issuedBooks) {
+            issuedTableModel.addRow(new Object[]{
+                ib.bookId, ib.bookTitle, ib.studentName, ib.studentId, ib.issueDate
+            });
+        }
+    }
+    
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        SwingUtilities.invokeLater(() -> new lib_manage());
+    }
+}
